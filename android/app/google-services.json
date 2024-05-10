@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "258339805204",
+    "project_id": "ask-app-9df84",
+    "storage_bucket": "ask-app-9df84.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258339805204:android:0955e1b6234fe689d86f01",
+        "android_client_info": {
+          "package_name": "org.ryan.sparcs.ask.ask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8j4P0x5xtQStiOeTmn2iUB13sU5EuI3s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
