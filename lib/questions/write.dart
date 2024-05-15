@@ -11,6 +11,7 @@ class WritePage extends StatefulWidget {
 class _WritePageState extends State<WritePage> {
   bool _canPost = false;
   bool _anonymous = false;
+  Category? _category = null;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyTextController = TextEditingController();
@@ -83,12 +84,24 @@ class _WritePageState extends State<WritePage> {
                     ElevatedButton(
                         onPressed: () {
                           showModalBottomSheet(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20.0)),
+                              ),
                               context: context,
                               builder: (context) => ChooseCategory(
-                                    onCategorySelected: (Category category) {},
+                                    onCategorySelected: (Category category) {
+                                      _category = category;
+                                    },
                                   ));
                         },
-                        child: const Text('카테고리를 선택하세요.')),
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 0.0, horizontal: 40.0)),
+                        child: const Text(
+                          '카테고리를 선택하세요.',
+                          style: TextStyle(fontSize: 12.0),
+                        )),
                     const Divider(),
                     TextFormField(
                       controller: bodyTextController,
@@ -98,7 +111,7 @@ class _WritePageState extends State<WritePage> {
                           border: InputBorder.none,
                           enabledBorder: InputBorder.none,
                           focusedBorder: InputBorder.none,
-                          hintText: '여기에 제목을 입력하세요.',
+                          hintText: '여기에 내용을 입력하세요.',
                           hintStyle: TextStyle(fontSize: 14.0)),
                       style: const TextStyle(fontSize: 14.0),
                       onChanged: textUpdated,
