@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'form.dart';
 
 class SignInPage extends StatefulWidget {
+  const SignInPage({super.key});
+
   @override
   State<SignInPage> createState() => _SignInPageState();
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final GlobalKey<FormState> _formKey = GlobalKey();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final emailFormController = TextEditingController();
   final passwordFormController = TextEditingController();
