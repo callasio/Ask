@@ -3,26 +3,32 @@ import 'package:flutter/material.dart';
 
 import 'form.dart';
 
-class SignInPage extends StatelessWidget {
+class SignInPage extends StatefulWidget {
+  @override
+  State<SignInPage> createState() => _SignInPageState();
+}
+
+class _SignInPageState extends State<SignInPage> {
+  final GlobalKey<FormState> _formKey = GlobalKey();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
   final emailFormController = TextEditingController();
   final passwordFormController = TextEditingController();
 
-  void _signInWithEmailAndPassword(String email, String password) async {
+  bool _invalidCredentials = false;
+
+  void _signInWithEmailAndPassword(String emailId, String password) async {
     try {
       final credential = await _auth.signInWithEmailAndPassword(
-          email: email,
-          password: password
-      );
+          email: "$emailId@kaist.ac.kr", password: password);
       debugPrint(credential.toString());
-      debugPrint(FirebaseAuth.instance.currentUser.toString());
-      FirebaseAuth.instance.signOut();
+      debugPrint(_auth.currentUser.toString());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
         debugPrint('Email or Password are wrong.');
-      }
-      else {
+        setState(() {
+          _invalidCredentials = true;
+        });
+      } else {
         rethrow;
       }
     }
@@ -36,7 +42,9 @@ class SignInPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Column(
             children: [
-              const SizedBox(height: 135,),
+              const SizedBox(
+                height: 135,
+              ),
               Padding(
                 padding: const EdgeInsets.all(60.0),
                 child: Image.asset(
@@ -44,36 +52,40 @@ class SignInPage extends StatelessWidget {
                   width: 270,
                 ),
               ),
-              const SizedBox(height: 44,),
+              const SizedBox(
+                height: 44,
+              ),
               EmailForm(controller: emailFormController),
               const SizedBox(height: 16.05),
-              PasswordForm(controller: passwordFormController,),
-              const SizedBox(height: 19,),
+              PasswordForm(
+                controller: passwordFormController,
+              ),
+              const SizedBox(
+                height: 6,
+              ),
+              if (_invalidCredentials)
+                const Text(
+                  "Email or Password are wrong.",
+                  style: TextStyle(color: Colors.red),
+                ),
+              const SizedBox(
+                height: 14,
+              ),
               FilledButton(
                 onPressed: () {
                   _signInWithEmailAndPassword(
-                      '${emailFormController.text}@kaist.ac.kr',
-                      passwordFormController.text
-                  );
+                      emailFormController.text, passwordFormController.text);
                 },
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0))
-                  ),
-                  minimumSize: MaterialStateProperty.all(
-                    const Size(double.infinity, 67.0)
-                  ),
-                  fixedSize: MaterialStateProperty.all(
-                    const Size(double.infinity, 67.0)
-                  )
-                ),
-                child: const Text(
-                  'Sign In',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800
-                  )
-                ),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0))),
+                    minimumSize: MaterialStateProperty.all(
+                        const Size(double.infinity, 67.0)),
+                    fixedSize: MaterialStateProperty.all(
+                        const Size(double.infinity, 67.0))),
+                child: const Text('Sign In',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
               )
             ],
           ),
@@ -81,5 +93,4 @@ class SignInPage extends StatelessWidget {
       ),
     );
   }
-
 }
