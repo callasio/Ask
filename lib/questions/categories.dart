@@ -1,9 +1,9 @@
 // ignore_for_file: prefer_const_constructors_in_immutables
 
-import 'package:flutter/animation.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class Category {
   static const List<String> types = ["학과", "강의", "분반"];
@@ -68,10 +68,30 @@ class Category {
     'TS',
     'CE'
   ];
+
+  final String? department;
+  final String? courseCode;
+  final String? section;
+
+  Category(
+      {required this.department,
+      required this.courseCode,
+      required this.section});
+
+  @override
+  String toString() {
+    if (courseCode == null) {
+      return "학과/$department";
+    } else if (section == null) {
+      return "강의/$department$courseCode";
+    } else {
+      return "분반/$department$courseCode($section)";
+    }
+  }
 }
 
 class ChooseCategory extends StatefulWidget {
-  final Function(Category) onCategorySelected;
+  final Function(Category?) onCategorySelected;
 
   ChooseCategory({super.key, required this.onCategorySelected});
 
@@ -81,72 +101,196 @@ class ChooseCategory extends StatefulWidget {
 
 class _ChooseCategoryState extends State<ChooseCategory>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Offset> _animation;
-
   String? _department;
-  String? _courseNum;
+  String? _courseCode;
   String? _section;
+  bool _askingConfirm = false;
 
-  int get _pageNum => _department == null
-      ? 0
-      : _courseNum == null
-          ? 1
-          : _section == null
-              ? 2
-              : 3;
+  int hundred = 0;
+  int ten = 0;
+  int one = 0;
+
+  int _pageNum = 0;
 
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      appBarBuilder(),
+      topBarBuilder(),
       Expanded(
         child: <Widget>[
-          ListView.builder(
-              itemCount: Category.depts.length,
-              itemBuilder: (context, index) {
-                var dept = Category.depts[index];
-                return Row(
-                  children: [
-                    const Spacer(flex: 3),
-                    Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 1.5),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _department = dept;
-                            });
-                          },
-                          child: Text(dept),
-                        ),
-                      ),
-                    ),
-                    const Spacer(flex: 3),
-                  ],
-                );
-              }),
-          const Text("SeLeCt CoRuSe")
+          departmentSelector(context),
+          courseCodeSelector(context),
+          sectionSelector(context)
         ][_pageNum],
       ),
     ]);
   }
 
-  Widget appBarBuilder() {
+  Widget departmentSelector(BuildContext context) {
+    var home = Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: GridView.count(
+          crossAxisCount: 3,
+          childAspectRatio: 2,
+          children: List.generate(Category.depts.length, (index) {
+            var dept = Category.depts[index];
+            return Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          shadowColor: Colors.transparent,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.background),
+                      onPressed: () {
+                        setState(() {
+                          _department = dept;
+                          _askingConfirm = true;
+                        });
+                      },
+                      child: Text(dept),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
+      ),
+    );
+
+    if (_askingConfirm) {
+      return Stack(
+        children: [
+          Column(
+            children: [
+              home,
+            ],
+          ),
+          bottomBar(context, "\"학과/$_department\"에 질문하기", "과목 코드 선택하기")
+        ],
+      );
+    } else {
+      return Column(
+        children: [
+          home,
+        ],
+      );
+    }
+  }
+
+  Widget courseCodeSelector(BuildContext context) {
+    var controller = TextEditingController();
+
+    var home = Align(
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        width: 150,
+        child: PinCodeTextField(
+          controller: controller,
+          length: 3,
+          appContext: context,
+          keyboardType: TextInputType.number,
+          cursorColor: Theme.of(context).colorScheme.secondary,
+          pinTheme: PinTheme(
+              shape: PinCodeFieldShape.box,
+              borderRadius: BorderRadius.circular(10),
+              selectedColor: Theme.of(context).colorScheme.secondary,
+              inactiveColor: Theme.of(context).disabledColor,
+              activeColor: Theme.of(context).disabledColor),
+          animationDuration: const Duration(milliseconds: 50),
+          onCompleted: (value) {
+            setState(() {
+              _courseCode = value;
+              _askingConfirm = true;
+            });
+          },
+        ),
+      ),
+    );
+
+    if (_courseCode != null) {
+      controller.text = _courseCode!;
+    }
+
+    if (_askingConfirm) {
+      return Stack(
+        children: [
+          home,
+          bottomBar(context, "\"강의 $_department$_courseCode\"에 질문하기", "분반 선택하기")
+        ],
+      );
+    }
+    return home;
+  }
+
+  Widget sectionSelector(BuildContext context) {
+    var controller = TextEditingController();
+
+    var home = Align(
+      alignment: Alignment.topCenter,
+      child: PinCodeTextField(
+        inputFormatters: [FilteringTextInputFormatter.allow(RegExp("[A-Z]"))],
+        textCapitalization: TextCapitalization.characters,
+        mainAxisAlignment: MainAxisAlignment.center,
+        controller: controller,
+        length: 1,
+        appContext: context,
+        cursorColor: Theme.of(context).colorScheme.secondary,
+        pinTheme: PinTheme(
+            shape: PinCodeFieldShape.box,
+            borderRadius: BorderRadius.circular(10),
+            selectedColor: Theme.of(context).colorScheme.secondary,
+            inactiveColor: Theme.of(context).disabledColor,
+            activeColor: Theme.of(context).disabledColor),
+        animationDuration: const Duration(milliseconds: 50),
+        onCompleted: (value) {
+          setState(() {
+            _section = value;
+            _askingConfirm = true;
+          });
+        },
+      ),
+    );
+
+    if (_section != null) {
+      controller.text = _section!;
+    }
+
+    if (_askingConfirm) {
+      return Stack(
+        children: [
+          home,
+          bottomBar(
+              context, "\"분반 $_department$_courseCode($_section)\"에 질문하기", null)
+        ],
+      );
+    }
+    return home;
+  }
+
+  Widget topBarBuilder() {
     final currentTextStyle = Theme.of(context).textTheme.headlineSmall;
     final selectedTextStyle = Theme.of(context).textTheme.bodyMedium;
 
     var children = <Widget>[];
-    if (_department == null) {
-      children = [
-        Text(
-          "학과",
-          style: currentTextStyle,
-        )
-      ];
-    } else {
-      if (_courseNum == null) {
+
+    switch (_pageNum) {
+      case 0:
+        children = [
+          Text(
+            "학과",
+            style: currentTextStyle,
+          )
+        ];
+        break;
+
+      case 1:
         children = [
           Text(
             _department!,
@@ -154,14 +298,16 @@ class _ChooseCategoryState extends State<ChooseCategory>
           ),
           const Icon(Icons.navigate_next),
           Text(
-            "강의",
+            "과목 코드",
             style: currentTextStyle,
           )
         ];
-      } else {
+        break;
+
+      case 2:
         children = [
           Text(
-            "$_department$_courseNum",
+            "$_department$_courseCode",
             style: selectedTextStyle,
           ),
           const Icon(Icons.navigate_next),
@@ -170,7 +316,7 @@ class _ChooseCategoryState extends State<ChooseCategory>
             style: currentTextStyle,
           )
         ];
-      }
+        break;
     }
 
     return Padding(
@@ -180,17 +326,24 @@ class _ChooseCategoryState extends State<ChooseCategory>
         children: [
           IconButton(
             onPressed: () {
-              setState(() {
-                if (_pageNum == 0) {
-                  Navigator.pop(context);
-                } else if (_pageNum == 1) {
-                  _department = null;
-                } else if (_pageNum == 2) {
-                  _courseNum = null;
-                }
-              });
+              if (_pageNum == 0) {
+                widget.onCategorySelected(null);
+                Navigator.pop(context);
+              } else {
+                setState(() {
+                  switch (_pageNum) {
+                    case 1:
+                      _courseCode = null;
+                      break;
+                    case 2:
+                      _section = null;
+                      break;
+                  }
+                  _pageNum--;
+                });
+              }
             },
-            icon: const Icon(Icons.close),
+            icon: const Icon(Icons.navigate_before),
           ),
           const SizedBox(
             width: 6,
@@ -199,6 +352,50 @@ class _ChooseCategoryState extends State<ChooseCategory>
             children: children,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget bottomBar(BuildContext context, String confirmText, String? nextText) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: FittedBox(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: Card(
+            color: Theme.of(context).primaryColorLight,
+            child: Column(
+              children: [
+                ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColorLight),
+                    onPressed: () {
+                      widget.onCategorySelected(Category(
+                          department: _department,
+                          courseCode: _courseCode,
+                          section: _section));
+                      Navigator.of(context).pop();
+                    },
+                    icon: const Icon(Icons.check),
+                    label: Text(confirmText)),
+                nextText != null
+                    ? ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).primaryColorLight),
+                        onPressed: () {
+                          setState(() {
+                            _askingConfirm = false;
+                            _pageNum++;
+                          });
+                        },
+                        icon: const Icon(Icons.navigate_next),
+                        label: Text(nextText))
+                    : const SizedBox()
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

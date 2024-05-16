@@ -11,7 +11,7 @@ class WritePage extends StatefulWidget {
 class _WritePageState extends State<WritePage> {
   bool _canPost = false;
   bool _anonymous = false;
-  Category? _category = null;
+  Category? _category;
 
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyTextController = TextEditingController();
@@ -20,7 +20,7 @@ class _WritePageState extends State<WritePage> {
     String title = titleController.text;
     String bodyText = bodyTextController.text;
 
-    bool canPost = title != '' && bodyText != '';
+    bool canPost = title != '' && bodyText != '' && _category != null;
 
     if (canPost != _canPost) {
       setState(() {
@@ -90,17 +90,22 @@ class _WritePageState extends State<WritePage> {
                               ),
                               context: context,
                               builder: (context) => ChooseCategory(
-                                    onCategorySelected: (Category category) {
-                                      _category = category;
+                                    onCategorySelected: (category) {
+                                      setState(() {
+                                        _category = category;
+                                        textUpdated("");
+                                      });
                                     },
                                   ));
                         },
                         style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 0.0, horizontal: 40.0)),
-                        child: const Text(
-                          '카테고리를 선택하세요.',
-                          style: TextStyle(fontSize: 12.0),
+                        child: Text(
+                          _category == null
+                              ? "카테고리를 선택하세요"
+                              : "\"$_category\"에 질문",
+                          style: const TextStyle(fontSize: 12.0),
                         )),
                     const Divider(),
                     TextFormField(
@@ -127,14 +132,19 @@ class _WritePageState extends State<WritePage> {
                 children: [
                   SizedBox(
                     width: 24.0,
-                    child: Checkbox(
-                      splashRadius: 0.0,
-                      value: _anonymous,
-                      onChanged: (value) => {
-                        setState(() {
-                          _anonymous = value!;
-                        })
-                      },
+                    child: Transform.scale(
+                      scale: 0.75,
+                      child: Checkbox(
+                        splashRadius: 0.0,
+                        side: BorderSide(
+                            color: Theme.of(context).disabledColor, width: 1.5),
+                        value: _anonymous,
+                        onChanged: (value) => {
+                          setState(() {
+                            _anonymous = value!;
+                          })
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -144,8 +154,8 @@ class _WritePageState extends State<WritePage> {
                     '익명',
                     style: TextStyle(
                       color: _anonymous
-                          ? Theme.of(context).primaryColor
-                          : Theme.of(context).toggleButtonsTheme.borderColor,
+                          ? Theme.of(context).colorScheme.secondary
+                          : Theme.of(context).disabledColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w800,
                     ),

@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   static const primaryColor = Color(0XFF154E92);
+  // static const primaryColor = Color(0XFF8E3E63);
 
   @override
   Widget build(BuildContext context) {
