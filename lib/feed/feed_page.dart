@@ -2,6 +2,7 @@ import 'package:ask/feed/feed_card.dart';
 import 'package:ask/questions/write.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FeedPage extends StatefulWidget {
@@ -23,7 +24,10 @@ class _FeedPageState extends State<FeedPage> {
       _snapshot.docs;
 
   Future<void> loadPosts() async {
-    _snapshot = await _firestore.collection('posts').get();
+    _snapshot = await _firestore
+        .collection('posts')
+        .orderBy('timestamp', descending: true)
+        .get();
 
     setState(() {
       _loadingState = _LoadingState.done;
@@ -36,8 +40,12 @@ class _FeedPageState extends State<FeedPage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Ask'),
+      ),
+      drawer: const Drawer(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
       ),
       body: RefreshIndicator(onRefresh: loadPosts, child: mainView()),
       floatingActionButton: Column(
@@ -47,7 +55,7 @@ class _FeedPageState extends State<FeedPage> {
             heroTag: 'write-page',
             onPressed: () {
               Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const WritePage()));
+                  CupertinoPageRoute(builder: (context) => const WritePage()));
             },
             tooltip: '질문 작성하기',
             child: const Icon(Icons.post_add),
@@ -83,7 +91,7 @@ class _FeedPageState extends State<FeedPage> {
         itemCount: _posts.length,
         itemBuilder: (context, index) {
           final post = _posts[index];
-          return FeedCard(data: post.data());
+          return FeedCard(documentId: post.id, data: post.data());
         });
   }
 }

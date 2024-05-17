@@ -133,9 +133,9 @@ class _WritePageState extends State<WritePage> {
                             focusedBorder: InputBorder.none,
                             hintText: '제목',
                             hintStyle: TextStyle(
-                                fontSize: 18.0, fontWeight: FontWeight.w800)),
+                                fontSize: 24.0, fontWeight: FontWeight.w800)),
                         style: const TextStyle(
-                            fontSize: 18.0, fontWeight: FontWeight.w800),
+                            fontSize: 24.0, fontWeight: FontWeight.w800),
                         onChanged: textUpdated,
                       ),
                       ElevatedButton(
@@ -162,7 +162,7 @@ class _WritePageState extends State<WritePage> {
                             _category == null
                                 ? "카테고리를 선택하세요"
                                 : "\"$_category\"에 질문",
-                            style: const TextStyle(fontSize: 12.0),
+                            style: const TextStyle(fontSize: 14.0),
                           )),
                       const Divider(),
                       TextFormField(
@@ -174,8 +174,8 @@ class _WritePageState extends State<WritePage> {
                             enabledBorder: InputBorder.none,
                             focusedBorder: InputBorder.none,
                             hintText: '여기에 내용을 입력하세요.',
-                            hintStyle: TextStyle(fontSize: 14.0)),
-                        style: const TextStyle(fontSize: 14.0),
+                            hintStyle: TextStyle(fontSize: 16.0)),
+                        style: const TextStyle(fontSize: 16.0),
                         onChanged: textUpdated,
                       ),
                     ],

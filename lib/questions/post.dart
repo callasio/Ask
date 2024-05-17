@@ -1,4 +1,5 @@
 import 'package:ask/questions/categories.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class Post {
   final String writer;
@@ -35,5 +36,9 @@ class Post {
         datetime: DateTime.parse(json['timestamp'] as String),
         title: json['title'] as String,
         body: json['body'] as String);
+  }
+
+  String displayTime() {
+    return timeago.format(datetime, locale: 'en');
   }
 }

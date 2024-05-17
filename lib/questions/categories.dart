@@ -75,6 +75,26 @@ class Category {
       required this.courseCode,
       required this.section});
 
+  String getType() {
+    return toString().split('/')[0];
+  }
+
+  String getName() {
+    return toString().split('/')[1];
+  }
+
+  Color getColor(BuildContext context) {
+    var type = getType();
+
+    if (type == '학과') {
+      return const Color(0XFF9DDE8B);
+    }
+    if (type == '강의') {
+      return const Color(0XFFFFAF61);
+    }
+    return const Color(0XFF68D2E8);
+  }
+
   @override
   String toString() {
     if (courseCode == null) {
@@ -105,6 +125,33 @@ class Category {
         department: json['department'],
         courseCode: json['course'],
         section: json['section']);
+  }
+
+  Widget makeBox(BuildContext context) {
+    final categoryBorderRadius = BorderRadius.circular(8);
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: categoryBorderRadius,
+        color: getColor(context),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: categoryBorderRadius,
+          onTap: () {},
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+            child: Text(
+              toString(),
+              style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 11.0,
+                  color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

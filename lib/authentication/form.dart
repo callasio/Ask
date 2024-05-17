@@ -5,11 +5,11 @@ class _FormStyles {
 
   static const InputBorder enabledBorder = OutlineInputBorder(
       borderRadius: borderRadius,
-      borderSide: BorderSide(color: Color(0XFFC0C0C0), width: 3.0));
+      borderSide: BorderSide(color: Color(0XFFC0C0C0), width: 2.0));
 
   static const InputBorder focusedBorder = OutlineInputBorder(
       borderRadius: borderRadius,
-      borderSide: BorderSide(color: Color(0XFF3498DB), width: 3.0));
+      borderSide: BorderSide(color: Color(0XFF3498DB), width: 2.0));
 }
 
 class EmailForm extends StatelessWidget {
