@@ -1,4 +1,6 @@
 import 'package:ask/questions/categories.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class WritePage extends StatefulWidget {
@@ -16,11 +18,13 @@ class _WritePageState extends State<WritePage> {
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyTextController = TextEditingController();
 
-  void textUpdated(String _) {
-    String title = titleController.text;
-    String bodyText = bodyTextController.text;
+  String get _title => titleController.text;
+  String get _bodyText => bodyTextController.text;
 
-    bool canPost = title != '' && bodyText != '' && _category != null;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  void textUpdated(String _) {
+    bool canPost = (_title != '' && _bodyText != '' && _category != null);
 
     if (canPost != _canPost) {
       setState(() {
@@ -29,7 +33,24 @@ class _WritePageState extends State<WritePage> {
     }
   }
 
-  void postQuestion() {}
+  void postQuestion() {
+    var username = FirebaseAuth.instance.currentUser!.email!;
+
+    Map<String, dynamic> postData = {
+      "writer": username,
+      "anonymous": _anonymous,
+      "category": _category!.toJson(),
+      "title": _title,
+      "body": _bodyText
+    };
+
+    debugPrint(postData.toString());
+
+    _firestore
+        .collection('posts')
+        .add(postData)
+        .then((doc) => debugPrint('DocumentSnapshot added with ID: ${doc.id}'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +66,9 @@ class _WritePageState extends State<WritePage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    foregroundColor: Theme.of(context).colorScheme.onSecondary),
                 onPressed: _canPost ? postQuestion : null,
                 child: const Text(
                   '게시',
@@ -154,7 +178,7 @@ class _WritePageState extends State<WritePage> {
                     '익명',
                     style: TextStyle(
                       color: _anonymous
-                          ? Theme.of(context).colorScheme.secondary
+                          ? Theme.of(context).colorScheme.primary
                           : Theme.of(context).disabledColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w800,

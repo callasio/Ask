@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors_in_immutables
 
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -88,6 +87,20 @@ class Category {
       return "분반/$department$courseCode($section)";
     }
   }
+
+  Map<String, dynamic> toJson() {
+    if (courseCode == null) {
+      return {"department": department};
+    } else if (section == null) {
+      return {"department": department, "course": courseCode};
+    } else {
+      return {
+        "department": department,
+        "course": courseCode,
+        "section": section
+      };
+    }
+  }
 }
 
 class ChooseCategory extends StatefulWidget {
@@ -112,8 +125,25 @@ class _ChooseCategoryState extends State<ChooseCategory>
 
   int _pageNum = 0;
 
+  late AnimationController _animationController;
+  late Animation<Offset> _offset;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 100));
+
+    _offset = Tween<Offset>(
+            begin: const Offset(0.0, 1.0), end: const Offset(0.0, 0.0))
+        .animate(_animationController);
+  }
+
   @override
   Widget build(BuildContext context) {
+    _animationController.reset();
+
     return Column(mainAxisSize: MainAxisSize.min, children: [
       topBarBuilder(),
       Expanded(
@@ -142,11 +172,10 @@ class _ChooseCategoryState extends State<ChooseCategory>
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          shadowColor: Colors.transparent,
                           backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
+                              Theme.of(context).colorScheme.primary,
                           foregroundColor:
-                              Theme.of(context).colorScheme.background),
+                              Theme.of(context).colorScheme.onSecondary),
                       onPressed: () {
                         setState(() {
                           _department = dept;
@@ -357,42 +386,53 @@ class _ChooseCategoryState extends State<ChooseCategory>
   }
 
   Widget bottomBar(BuildContext context, String confirmText, String? nextText) {
+    _animationController.forward();
     return Align(
       alignment: Alignment.bottomCenter,
       child: FittedBox(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          child: Card(
-            color: Theme.of(context).primaryColorLight,
-            child: Column(
-              children: [
-                ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColorLight),
-                    onPressed: () {
-                      widget.onCategorySelected(Category(
-                          department: _department,
-                          courseCode: _courseCode,
-                          section: _section));
-                      Navigator.of(context).pop();
-                    },
-                    icon: const Icon(Icons.check),
-                    label: Text(confirmText)),
-                nextText != null
-                    ? ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).primaryColorLight),
-                        onPressed: () {
-                          setState(() {
-                            _askingConfirm = false;
-                            _pageNum++;
-                          });
-                        },
-                        icon: const Icon(Icons.navigate_next),
-                        label: Text(nextText))
-                    : const SizedBox()
-              ],
+        child: SlideTransition(
+          position: _offset,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Card(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: Column(
+                children: [
+                  ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primaryContainer,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onPrimaryContainer),
+                      onPressed: () {
+                        widget.onCategorySelected(Category(
+                            department: _department,
+                            courseCode: _courseCode,
+                            section: _section));
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.check),
+                      label: Text(confirmText)),
+                  nextText != null
+                      ? ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer,
+                              foregroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onPrimaryContainer),
+                          onPressed: () {
+                            setState(() {
+                              _askingConfirm = false;
+                              _pageNum++;
+                            });
+                          },
+                          icon: const Icon(Icons.navigate_next),
+                          label: Text(nextText))
+                      : const SizedBox()
+                ],
+              ),
             ),
           ),
         ),

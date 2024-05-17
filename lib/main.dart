@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(shadowColor: Colors.transparent)),
         colorScheme: ColorScheme.fromSeed(
             brightness: Brightness.dark, seedColor: primaryColor),
         useMaterial3: true,
