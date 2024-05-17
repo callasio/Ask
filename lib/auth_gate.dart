@@ -1,4 +1,4 @@
-import 'package:ask/main.dart';
+import 'package:ask/feed/feed_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:flutter/material.dart';
 
