@@ -16,7 +16,7 @@ class AuthGate extends StatelessWidget {
             return SignInPage();
           }
 
-          return const MyHomePage();
+          return const FeedPage();
         });
   }
 }

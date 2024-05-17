@@ -99,6 +99,13 @@ class Category {
       };
     }
   }
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+        department: json['department'],
+        courseCode: json['course'],
+        section: json['section']);
+  }
 }
 
 class ChooseCategory extends StatefulWidget {
