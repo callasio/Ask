@@ -38,14 +38,16 @@ class _WritePageState extends State<WritePage> {
 
   Future<DateTime> getDateTime() async {
     DateTime dateTime;
-    var document = await _firestore
+    final document = await _firestore
         .collection('timestamps')
         .add({'createdAt': FieldValue.serverTimestamp()});
 
-    var snapshot = await document.get();
-    dateTime = (snapshot.data()!['createdAt'] as Timestamp).toDate();
+    final snapshot = await document.get();
+    final docId = snapshot.reference.id;
 
-    debugPrint(dateTime.toString());
+    dateTime = (snapshot.data()!['createdAt'] as Timestamp).toDate().toUtc();
+    await _firestore.collection('timestamps').doc(docId).delete();
+
     return dateTime;
   }
 
@@ -78,7 +80,13 @@ class _WritePageState extends State<WritePage> {
   @override
   Widget build(BuildContext context) {
     if (_isPosted) {
-      Navigator.pop(context);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.pop(context);
+      });
+
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
     }
 
     return Stack(children: [

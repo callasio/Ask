@@ -39,6 +39,6 @@ class Post {
   }
 
   String displayTime() {
-    return timeago.format(datetime, locale: 'en');
+    return timeago.format(datetime.toLocal());
   }
 }
