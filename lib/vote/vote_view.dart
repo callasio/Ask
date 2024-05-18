@@ -106,9 +106,6 @@ class _VoteViewState extends State<VoteView> {
   @override
   Widget build(BuildContext context) {
     const thumbSize = 15.0;
-    const paddingThumbNumber = SizedBox(
-      width: 10,
-    );
     return FittedBox(
       child: Container(
         decoration: BoxDecoration(

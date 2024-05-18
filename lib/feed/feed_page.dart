@@ -16,6 +16,7 @@ class FeedPage extends StatefulWidget {
 enum _LoadingState { done, loading }
 
 class _FeedPageState extends State<FeedPage> {
+  Key _refreshKey = UniqueKey();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String get username => FirebaseAuth.instance.currentUser!.email!;
 
@@ -29,7 +30,7 @@ class _FeedPageState extends State<FeedPage> {
         .collection('posts')
         .orderBy('timestamp', descending: true)
         .get();
-
+    _refreshKey = UniqueKey();
     setState(() {
       _loadingState = _LoadingState.done;
     });
@@ -44,6 +45,7 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _refreshKey,
       appBar: AppBar(
         scrolledUnderElevation: 0,
         title: const Text('Ask'),
