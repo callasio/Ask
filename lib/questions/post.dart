@@ -8,7 +8,7 @@ class Post {
   final DateTime datetime;
   final String title;
   final String body;
-  final int vote;
+  int vote;
 
   Post(
       {required this.writer,

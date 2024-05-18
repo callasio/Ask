@@ -1,3 +1,4 @@
+import 'package:ask/questions/info_bar.dart';
 import 'package:ask/questions/post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -105,6 +106,10 @@ class _QuestionPageState extends State<QuestionPage> {
                         fontSize: 13,
                         color: Theme.of(context).colorScheme.onSurface),
                   ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  InfoBar(documentId: widget.documentId, post: post)
                 ],
               ),
             ),

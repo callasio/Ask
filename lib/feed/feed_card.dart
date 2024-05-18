@@ -77,6 +77,9 @@ class _FeedCardState extends State<FeedCard> {
                       fontSize: 13,
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
+                const SizedBox(
+                  height: 8,
+                ),
                 InfoBar(documentId: widget.documentId, post: post)
               ],
             ),

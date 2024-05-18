@@ -14,7 +14,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const primaryColor = Color(0XFF154E92);
+  static const primaryColor = Color(0XFF19469A);
+  static const badColor = Color(0XFFC61065);
   // static const primaryColor = Color(0XFF8E3E63);
 
   @override

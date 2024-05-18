@@ -1,3 +1,4 @@
+import 'package:ask/main.dart';
 import 'package:ask/questions/post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,13 +19,15 @@ class _VoteViewState extends State<VoteView> {
   final User user = FirebaseAuth.instance.currentUser!;
 
   int userVote = 0;
-  int? _documentVote;
-  int get documentVote =>
-      _documentVote == null ? widget.post.vote : (_documentVote! + userVote);
+  int? _otherUsersVote;
+  int get documentVote => _otherUsersVote == null
+      ? widget.post.vote
+      : (_otherUsersVote! + userVote);
 
   void setUserVote(int to) {
     setState(() {
       userVote = to;
+      widget.post.vote = documentVote;
       updateUserVoteServer().then((_) {
         updateDocumentVoteServer();
       });
@@ -96,42 +99,98 @@ class _VoteViewState extends State<VoteView> {
     super.initState();
 
     checkUserVoteServer().then((_) => setState(() {
-          _documentVote = widget.post.vote - userVote;
+          _otherUsersVote = widget.post.vote - userVote;
         }));
   }
 
   @override
   Widget build(BuildContext context) {
+    const thumbSize = 15.0;
+    const paddingThumbNumber = SizedBox(
+      width: 10,
+    );
     return FittedBox(
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(100),
-            border: Border.all(color: Theme.of(context).dividerColor)),
+            border:
+                Border.all(color: Theme.of(context).dividerColor, width: 0.5)),
         child: Row(
           children: [
-            IconButton(
-                onPressed: () {
-                  if (userVote <= 0) {
-                    setUserVote(1);
-                  } else {
-                    setUserVote(0);
-                  }
-                },
-                icon: userVote <= 0
-                    ? const Icon(Icons.thumb_up_alt_outlined)
-                    : const Icon(Icons.thumb_up_alt)),
-            Text(documentVote.toString()),
-            IconButton(
-                onPressed: () {
-                  if (userVote >= 0) {
-                    setUserVote(-1);
-                  } else {
-                    setUserVote(0);
-                  }
-                },
-                icon: userVote >= 0
-                    ? const Icon(Icons.thumb_down_alt_outlined)
-                    : const Icon(Icons.thumb_down_alt))
+            InkWell(
+              borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(100),
+                  bottomLeft: Radius.circular(100)),
+              onTap: () {
+                if (userVote <= 0) {
+                  setUserVote(1);
+                } else {
+                  setUserVote(0);
+                }
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(left: 8.0, top: 4.0, bottom: 4.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      userVote <= 0 ? Icons.thumb_up_outlined : Icons.thumb_up,
+                      color: userVote <= 0 ? null : MyApp.primaryColor,
+                      size: thumbSize,
+                    ),
+                    const SizedBox(
+                      width: 6,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            Text(
+              documentVote.toString(),
+              style: TextStyle(
+                  fontWeight: userVote == 0 ? null : FontWeight.w700,
+                  color: userVote == 0
+                      ? null
+                      : userVote > 0
+                          ? MyApp.primaryColor
+                          : MyApp.badColor),
+            ),
+            const SizedBox(
+              width: 4,
+            ),
+            InkWell(
+              borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(100),
+                  bottomRight: Radius.circular(100)),
+              onTap: () {
+                if (userVote >= 0) {
+                  setUserVote(-1);
+                } else {
+                  setUserVote(0);
+                }
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(right: 8.0, top: 4.0, bottom: 4.0),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 6,
+                    ),
+                    Icon(
+                      userVote >= 0
+                          ? Icons.thumb_down_outlined
+                          : Icons.thumb_down,
+                      color: userVote >= 0 ? null : MyApp.badColor,
+                      size: thumbSize,
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
