@@ -1,4 +1,5 @@
 import 'package:ask/feed/feed_card.dart';
+import 'package:ask/questions/post.dart';
 import 'package:ask/questions/write.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -96,7 +97,8 @@ class _FeedPageState extends State<FeedPage> {
         itemCount: _posts.length,
         itemBuilder: (context, index) {
           final post = _posts[index];
-          return FeedCard(documentId: post.id, data: post.data());
+          return FeedCard(
+              documentId: post.id, post: Post.fromJson(post.data()));
         });
   }
 }

@@ -66,9 +66,8 @@ class _WritePageState extends State<WritePage> {
         category: _category!,
         datetime: dateTime,
         title: _title,
-        body: _bodyText);
-
-    debugPrint(post.toString());
+        body: _bodyText,
+        vote: 0);
 
     await _firestore.collection('posts').add(post.toJson());
 

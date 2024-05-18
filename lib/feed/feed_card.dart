@@ -1,13 +1,14 @@
+import 'package:ask/questions/info_bar.dart';
 import 'package:ask/questions/post.dart';
 import 'package:ask/questions/question_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FeedCard extends StatefulWidget {
-  const FeedCard({super.key, required this.data, required this.documentId});
+  const FeedCard({super.key, required this.post, required this.documentId});
 
   final String documentId;
-  final Map<String, dynamic> data;
+  final Post post;
 
   @override
   State<FeedCard> createState() => _FeedCardState();
@@ -18,7 +19,7 @@ class _FeedCardState extends State<FeedCard> {
 
   @override
   Widget build(BuildContext context) {
-    post = Post.fromJson(widget.data);
+    post = widget.post;
 
     return Column(
       children: [
@@ -76,6 +77,7 @@ class _FeedCardState extends State<FeedCard> {
                       fontSize: 13,
                       color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
+                InfoBar(documentId: widget.documentId, post: post)
               ],
             ),
           ),

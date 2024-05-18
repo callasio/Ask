@@ -8,6 +8,7 @@ class Post {
   final DateTime datetime;
   final String title;
   final String body;
+  final int vote;
 
   Post(
       {required this.writer,
@@ -15,7 +16,8 @@ class Post {
       required this.category,
       required this.datetime,
       required this.title,
-      required this.body});
+      required this.body,
+      required this.vote});
 
   Map<String, dynamic> toJson() {
     return {
@@ -24,7 +26,8 @@ class Post {
       "anonymous": anonymous,
       "timestamp": datetime.toIso8601String(),
       "title": title,
-      "body": body
+      "body": body,
+      "vote": vote,
     };
   }
 
@@ -35,7 +38,8 @@ class Post {
         category: Category.fromJson(json['category']),
         datetime: DateTime.parse(json['timestamp'] as String),
         title: json['title'] as String,
-        body: json['body'] as String);
+        body: json['body'] as String,
+        vote: json['vote'] as int);
   }
 
   String displayTime() {

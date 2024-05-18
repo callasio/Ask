@@ -19,13 +19,10 @@ class _SignInPageState extends State<SignInPage> {
 
   void _signInWithEmailAndPassword(String emailId, String password) async {
     try {
-      final credential = await _auth.signInWithEmailAndPassword(
+      await _auth.signInWithEmailAndPassword(
           email: "$emailId@kaist.ac.kr", password: password);
-      debugPrint(credential.toString());
-      debugPrint(_auth.currentUser.toString());
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
-        debugPrint('Email or Password are wrong.');
         setState(() {
           _invalidCredentials = true;
         });
