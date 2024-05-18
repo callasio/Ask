@@ -20,11 +20,9 @@ class _FeedCardState extends State<FeedCard> {
   Widget build(BuildContext context) {
     post = Post.fromJson(widget.data);
 
-    final cardBorderRadius = BorderRadius.circular(12);
-
-    return Card(
-        shape: RoundedRectangleBorder(borderRadius: cardBorderRadius),
-        child: InkWell(
+    return Column(
+      children: [
+        InkWell(
           onTap: () {
             Navigator.push(
                 context,
@@ -32,7 +30,6 @@ class _FeedCardState extends State<FeedCard> {
                     builder: (context) => QuestionPage(
                         documentId: widget.documentId, post: post)));
           },
-          borderRadius: cardBorderRadius,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -82,6 +79,13 @@ class _FeedCardState extends State<FeedCard> {
               ],
             ),
           ),
-        ));
+        ),
+        const Divider(
+          height: 0,
+          indent: 0,
+          thickness: 1,
+        )
+      ],
+    );
   }
 }

@@ -44,6 +44,7 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Text('Ask'),
       ),
       drawer: const Drawer(
