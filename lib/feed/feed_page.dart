@@ -66,7 +66,9 @@ class _FeedPageState extends State<FeedPage> {
           },
         ),
         scrolledUnderElevation: 0,
-        title: const Text('Ask'),
+        title: widget.categoryFilter != null
+            ? Text('"${widget.categoryFilter.toString()}"의 질문')
+            : const Text('Ask'),
         actions: [
           IconButton(
               onPressed: () {
