@@ -65,34 +65,30 @@ class _CommentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Card(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Row(
-            children: [
-              Transform.scale(
-                  scale: 0.6,
-                  child: Icon(Icons.person,
-                      color: Theme.of(context).colorScheme.secondary)),
-              Text(
-                sender,
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.w400),
-              ),
-            ],
-          ),
+    return Card(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Row(
+          children: [
+            Transform.scale(
+                scale: 0.6,
+                child: Icon(Icons.person,
+                    color: Theme.of(context).colorScheme.secondary)),
+            Text(
+              sender,
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 10.0,
+                  fontWeight: FontWeight.w400),
+            ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(commentText),
-        ),
-      ])),
-    );
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(commentText),
+      ),
+    ]));
   }
 }
