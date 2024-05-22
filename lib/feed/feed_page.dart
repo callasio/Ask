@@ -1,4 +1,5 @@
 import 'package:ask/feed/feed_card.dart';
+import 'package:ask/questions/categories.dart';
 import 'package:ask/questions/post.dart';
 import 'package:ask/questions/write.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +8,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+  const FeedPage({super.key, this.categoryFilter});
+
+  final Category? categoryFilter;
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -26,10 +29,17 @@ class _FeedPageState extends State<FeedPage> {
       _snapshot.docs;
 
   Future<void> loadPosts() async {
-    _snapshot = await _firestore
-        .collection('posts')
-        .orderBy('timestamp', descending: true)
-        .get();
+    if (widget.categoryFilter == null) {
+      _snapshot = await _firestore
+          .collection('posts')
+          .orderBy('timestamp', descending: true)
+          .get();
+    } else {
+      _snapshot = await widget.categoryFilter!
+          .query(_firestore.collection('posts'))
+          .orderBy('timestamp', descending: true)
+          .get();
+    }
     _refreshKey = UniqueKey();
     setState(() {
       _loadingState = _LoadingState.done;
@@ -47,8 +57,35 @@ class _FeedPageState extends State<FeedPage> {
     return Scaffold(
       key: _refreshKey,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (widget.categoryFilter != null) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
         scrolledUnderElevation: 0,
         title: const Text('Ask'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) => ChooseCategory(
+                        categoryMessageSuffix: ' 질문 보기',
+                        onCategorySelected: (category) {
+                          Navigator.of(context).push(CupertinoPageRoute(
+                              builder: (context) => FeedPage(
+                                    categoryFilter: category,
+                                  )));
+                        }));
+              },
+              icon: const Icon(Icons.search)),
+          const SizedBox(
+            width: 6,
+          )
+        ],
       ),
       drawer: const Drawer(
         child: Center(

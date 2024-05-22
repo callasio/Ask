@@ -1,3 +1,6 @@
+import 'package:ask/feed/feed_page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -138,7 +141,12 @@ class Category {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: categoryBorderRadius,
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(CupertinoPageRoute(
+                builder: (context) => FeedPage(
+                      categoryFilter: this,
+                    )));
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
             child: Text(
@@ -153,12 +161,33 @@ class Category {
       ),
     );
   }
+
+  Query<Map<String, dynamic>> query(
+      CollectionReference<Map<String, dynamic>> collectionReference) {
+    if (courseCode == null) {
+      return collectionReference.where('category.department',
+          isEqualTo: department);
+    } else if (section == null) {
+      return collectionReference
+          .where('category.department', isEqualTo: department)
+          .where('category.course', isEqualTo: courseCode);
+    } else {
+      return collectionReference
+          .where('category.department', isEqualTo: department)
+          .where('category.course', isEqualTo: courseCode)
+          .where('category.section', isEqualTo: section);
+    }
+  }
 }
 
 class ChooseCategory extends StatefulWidget {
   final Function(Category?) onCategorySelected;
+  final String categoryMessageSuffix;
 
-  ChooseCategory({super.key, required this.onCategorySelected});
+  ChooseCategory(
+      {super.key,
+      required this.onCategorySelected,
+      required this.categoryMessageSuffix});
 
   @override
   State<ChooseCategory> createState() => _ChooseCategoryState();
@@ -253,7 +282,10 @@ class _ChooseCategoryState extends State<ChooseCategory>
               home,
             ],
           ),
-          bottomBar(context, "\"학과/$_department\"에 질문하기", "과목 코드 선택하기")
+          bottomBar(
+              context,
+              "\"학과/$_department\"${widget.categoryMessageSuffix}",
+              "과목 코드 선택하기")
         ],
       );
     } else {
@@ -303,7 +335,10 @@ class _ChooseCategoryState extends State<ChooseCategory>
       return Stack(
         children: [
           home,
-          bottomBar(context, "\"강의 $_department$_courseCode\"에 질문하기", "분반 선택하기")
+          bottomBar(
+              context,
+              "\"강의 $_department$_courseCode\"${widget.categoryMessageSuffix}",
+              "분반 선택하기")
         ],
       );
     }
@@ -348,7 +383,9 @@ class _ChooseCategoryState extends State<ChooseCategory>
         children: [
           home,
           bottomBar(
-              context, "\"분반 $_department$_courseCode($_section)\"에 질문하기", null)
+              context,
+              "\"분반 $_department$_courseCode($_section)\"${widget.categoryMessageSuffix}",
+              null)
         ],
       );
     }
@@ -408,8 +445,8 @@ class _ChooseCategoryState extends State<ChooseCategory>
           IconButton(
             onPressed: () {
               if (_pageNum == 0) {
-                widget.onCategorySelected(null);
                 Navigator.pop(context);
+                widget.onCategorySelected(null);
               } else {
                 setState(() {
                   switch (_pageNum) {
@@ -457,11 +494,11 @@ class _ChooseCategoryState extends State<ChooseCategory>
                           foregroundColor:
                               Theme.of(context).colorScheme.onPrimaryContainer),
                       onPressed: () {
+                        Navigator.of(context).pop();
                         widget.onCategorySelected(Category(
                             department: _department,
                             courseCode: _courseCode,
                             section: _section));
-                        Navigator.of(context).pop();
                       },
                       icon: const Icon(Icons.check),
                       label: Text(confirmText)),

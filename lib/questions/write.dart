@@ -154,6 +154,7 @@ class _WritePageState extends State<WritePage> {
                                 ),
                                 context: context,
                                 builder: (context) => ChooseCategory(
+                                      categoryMessageSuffix: '에 질문하기',
                                       onCategorySelected: (category) {
                                         setState(() {
                                           _category = category;
