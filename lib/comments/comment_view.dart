@@ -20,16 +20,15 @@ class _CommentViewState extends State<CommentView> {
   List<QueryDocumentSnapshot<Map<String, dynamic>>> comments = [];
 
   Future<void> fetchComments() async {
-    QuerySnapshot querySnapshot = await firestore
+    QuerySnapshot querySnapshots = await firestore
         .collection('comments')
-        .where('user', isEqualTo: userId)
         .where('document', isEqualTo: widget.documentId)
         .get();
 
-    setState(() {
-      comments = querySnapshot.docs
-          as List<QueryDocumentSnapshot<Map<String, dynamic>>>;
-    });
+    comments = querySnapshots.docs
+        as List<QueryDocumentSnapshot<Map<String, dynamic>>>;
+
+    setState(() {});
   }
 
   @override
@@ -45,8 +44,10 @@ class _CommentViewState extends State<CommentView> {
       itemCount: comments.length,
       itemBuilder: (context, index) {
         return _CommentWidget(
-            commentId: comments[index].reference.id,
-            commentText: comments[index].data()['text']!);
+          commentId: comments[index].reference.id,
+          commentText: comments[index].data()['text']!,
+          sender: comments[index].data()['sender']!,
+        );
       },
     );
   }
@@ -54,13 +55,44 @@ class _CommentViewState extends State<CommentView> {
 
 class _CommentWidget extends StatelessWidget {
   const _CommentWidget(
-      {super.key, required this.commentId, required this.commentText});
+      {required this.commentId,
+      required this.commentText,
+      required this.sender});
 
+  final String sender;
   final String commentId;
   final String commentText;
 
   @override
   Widget build(BuildContext context) {
-    return Text(commentText);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Card(
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: Row(
+            children: [
+              Transform.scale(
+                  scale: 0.6,
+                  child: Icon(Icons.person,
+                      color: Theme.of(context).colorScheme.secondary)),
+              Text(
+                sender,
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 10.0,
+                    fontWeight: FontWeight.w400),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(commentText),
+        ),
+      ])),
+    );
   }
 }

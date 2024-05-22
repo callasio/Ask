@@ -1,5 +1,5 @@
 import 'package:ask/main.dart';
-import 'package:ask/questions/post.dart';
+import 'package:ask/vote/votable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +8,7 @@ class VoteView extends StatefulWidget {
   const VoteView({super.key, required this.documentId, required this.post});
 
   final String documentId;
-  final Post post;
+  final Votable post;
 
   @override
   State<VoteView> createState() => _VoteViewState();

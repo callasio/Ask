@@ -1,13 +1,15 @@
 import 'package:ask/questions/categories.dart';
+import 'package:ask/vote/votable.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class Post {
+class Post extends Votable {
   final String writer;
   final bool anonymous;
   final Category category;
   final DateTime datetime;
   final String title;
   final String body;
+  @override
   int vote;
 
   Post(

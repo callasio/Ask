@@ -47,7 +47,8 @@ class _CommentFormState extends State<CommentForm> {
                       firestore.collection('comments').add({
                         'user': userId,
                         'document': widget.documentId,
-                        'text': _textEditingController.text
+                        'text': _textEditingController.text,
+                        'sender': FirebaseAuth.instance.currentUser!.email
                       }).then((value) {
                         FocusScope.of(context).unfocus();
                         _textEditingController.text = '';

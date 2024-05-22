@@ -17,6 +17,7 @@ class QuestionPage extends StatefulWidget {
 }
 
 class _QuestionPageState extends State<QuestionPage> {
+  Key _refreshKey = UniqueKey();
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   Post get post => widget.post;
 
@@ -33,6 +34,7 @@ class _QuestionPageState extends State<QuestionPage> {
     }
 
     setState(() {
+      _refreshKey = UniqueKey();
       widget.post = Post.fromJson(snapshot.data()!);
     });
   }
@@ -44,95 +46,96 @@ class _QuestionPageState extends State<QuestionPage> {
     }
 
     return Scaffold(
+      key: _refreshKey,
       appBar: AppBar(),
-      body: Stack(children: [
-        RefreshIndicator(
-          onRefresh: onRefresh,
-          child: RawScrollbar(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    post.category.makeBox(context),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Transform.scale(
-                            scale: 0.6,
-                            child: Icon(Icons.person,
-                                color:
-                                    Theme.of(context).colorScheme.secondary)),
-                        Text(
-                          post.anonymous ? "익명" : post.writer,
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontSize: 10.0,
-                              fontWeight: FontWeight.w400),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Transform.scale(
-                            scale: 0.6,
-                            child: Icon(Icons.access_time,
-                                color:
-                                    Theme.of(context).colorScheme.secondary)),
-                        Text(
-                          post.displayTime(),
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontSize: 10.0,
-                              fontWeight: FontWeight.w400),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      post.title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    const Divider(),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      post.body,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 13,
-                          color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                    const SizedBox(
-                      height: 6,
-                    ),
-                    InfoBar(documentId: widget.documentId, post: post),
-                    CommentView(documentId: widget.documentId, post: post)
-                  ],
+      body: Column(children: [
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: onRefresh,
+            child: RawScrollbar(
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      post.category.makeBox(context),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Transform.scale(
+                              scale: 0.6,
+                              child: Icon(Icons.person,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
+                          Text(
+                            post.anonymous ? "익명" : post.writer,
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontSize: 10.0,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Transform.scale(
+                              scale: 0.6,
+                              child: Icon(Icons.access_time,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary)),
+                          Text(
+                            post.displayTime(),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontSize: 10.0,
+                                fontWeight: FontWeight.w400),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        post.title,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Divider(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        post.body,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 13,
+                            color: Theme.of(context).colorScheme.onSurface),
+                      ),
+                      const SizedBox(
+                        height: 6,
+                      ),
+                      InfoBar(documentId: widget.documentId, post: post),
+                      const Divider(),
+                      CommentView(documentId: widget.documentId, post: post)
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: CommentForm(
-            documentId: widget.documentId,
-            post: post,
-            onSended: () {
-              onRefresh();
-            },
-          ),
+        CommentForm(
+          documentId: widget.documentId,
+          post: post,
+          onSended: () {
+            onRefresh();
+          },
         ),
       ]),
     );
