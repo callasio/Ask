@@ -1,4 +1,6 @@
+import 'package:ask/comments/comment.dart';
 import 'package:ask/questions/post.dart';
+import 'package:ask/vote/vote_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,7 @@ class _CommentViewState extends State<CommentView> {
     QuerySnapshot querySnapshots = await firestore
         .collection('comments')
         .where('document', isEqualTo: widget.documentId)
+        .orderBy('timestamp')
         .get();
 
     comments = querySnapshots.docs
@@ -42,26 +45,21 @@ class _CommentViewState extends State<CommentView> {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: comments.length,
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
         return _CommentWidget(
-          commentId: comments[index].reference.id,
-          commentText: comments[index].data()['text']!,
-          sender: comments[index].data()['sender']!,
-        );
+            commentId: comments[index].reference.id,
+            comment: Comment.fromJson(comments[index].data()));
       },
     );
   }
 }
 
 class _CommentWidget extends StatelessWidget {
-  const _CommentWidget(
-      {required this.commentId,
-      required this.commentText,
-      required this.sender});
+  const _CommentWidget({required this.commentId, required this.comment});
 
-  final String sender;
   final String commentId;
-  final String commentText;
+  final Comment comment;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +74,7 @@ class _CommentWidget extends StatelessWidget {
                 child: Icon(Icons.person,
                     color: Theme.of(context).colorScheme.secondary)),
             Text(
-              sender,
+              comment.anonymous ? "익명" : comment.writer,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.secondary,
                   fontSize: 10.0,
@@ -87,8 +85,23 @@ class _CommentWidget extends StatelessWidget {
       ),
       Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Text(commentText),
+        child: Text(comment.text),
       ),
+      Row(
+        children: [
+          const Spacer(),
+          VoteView(
+              objectDocId: commentId,
+              votable: comment,
+              collectionName: 'comments'),
+          const SizedBox(
+            width: 10,
+          )
+        ],
+      ),
+      const SizedBox(
+        height: 10,
+      )
     ]));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:ask/authentication/email_confirm.dart';
 import 'package:ask/feed/feed_page.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:flutter/material.dart';
@@ -13,10 +14,12 @@ class AuthGate extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return SignInPage();
+            return const SignInPage();
           }
 
-          return const FeedPage();
+          return FirebaseAuth.instance.currentUser!.emailVerified
+              ? const FeedPage()
+              : const EmailConfirm();
         });
   }
 }

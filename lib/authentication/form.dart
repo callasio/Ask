@@ -24,6 +24,12 @@ class EmailForm extends StatelessWidget {
         Expanded(
           flex: 5,
           child: TextFormField(
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              }
+              return null;
+            },
             restorationId: 'email_field',
             textInputAction: TextInputAction.next,
             textAlign: TextAlign.center,
@@ -52,8 +58,10 @@ class EmailForm extends StatelessWidget {
 
 class PasswordForm extends StatefulWidget {
   final TextEditingController controller;
+  final bool isConfirm;
 
-  const PasswordForm({super.key, required this.controller});
+  const PasswordForm(
+      {super.key, required this.controller, required this.isConfirm});
 
   @override
   State<StatefulWidget> createState() => _PasswordFormState();
@@ -65,6 +73,12 @@ class _PasswordFormState extends State<PasswordForm> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        return null;
+      },
       restorationId: 'password_field',
       textInputAction: TextInputAction.next,
       textAlign: TextAlign.center,
@@ -74,7 +88,7 @@ class _PasswordFormState extends State<PasswordForm> {
       decoration: InputDecoration(
         enabledBorder: _FormStyles.enabledBorder,
         focusedBorder: _FormStyles.focusedBorder,
-        hintText: 'Password',
+        hintText: widget.isConfirm ? 'Password Confirm' : 'Password',
         hintStyle: const TextStyle(fontSize: 18, color: Color(0XFFC0C0C0)),
         suffixIcon: GestureDetector(
           onTap: _togglePasswordView,

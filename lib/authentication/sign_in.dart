@@ -1,5 +1,8 @@
+import 'package:ask/authentication/sign_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'form.dart';
 
@@ -18,6 +21,12 @@ class _SignInPageState extends State<SignInPage> {
   bool _invalidCredentials = false;
 
   void _signInWithEmailAndPassword(String emailId, String password) async {
+    if (emailId == '' || password == '') {
+      setState(() {
+        _invalidCredentials = true;
+      });
+      return;
+    }
     try {
       await _auth.signInWithEmailAndPassword(
           email: "$emailId@kaist.ac.kr", password: password);
@@ -57,6 +66,7 @@ class _SignInPageState extends State<SignInPage> {
               const SizedBox(height: 16.05),
               PasswordForm(
                 controller: passwordFormController,
+                isConfirm: false,
               ),
               const SizedBox(
                 height: 6,
@@ -84,7 +94,27 @@ class _SignInPageState extends State<SignInPage> {
                 child: const Text('Sign In',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-              )
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => const SignUpPage()));
+                },
+                child: Text(
+                  "New to Ask? Click here to sign up",
+                  style: TextStyle(
+                      fontSize: 10,
+                      color: Theme.of(context).colorScheme.secondary),
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
             ],
           ),
         ),

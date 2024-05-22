@@ -1,3 +1,3 @@
-abstract class Votable {
+mixin MixinVotable {
   abstract int vote;
 }

@@ -5,10 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class VoteView extends StatefulWidget {
-  const VoteView({super.key, required this.documentId, required this.post});
+  const VoteView(
+      {super.key,
+      required this.objectDocId,
+      required this.votable,
+      required this.collectionName});
 
-  final String documentId;
-  final Votable post;
+  final String objectDocId;
+  final MixinVotable votable;
+  final String collectionName;
 
   @override
   State<VoteView> createState() => _VoteViewState();
@@ -21,13 +26,13 @@ class _VoteViewState extends State<VoteView> {
   int userVote = 0;
   int? _otherUsersVote;
   int get documentVote => _otherUsersVote == null
-      ? widget.post.vote
+      ? widget.votable.vote
       : (_otherUsersVote! + userVote);
 
   void setUserVote(int to) {
     setState(() {
       userVote = to;
-      widget.post.vote = documentVote;
+      widget.votable.vote = documentVote;
       updateUserVoteServer().then((_) {
         updateDocumentVoteServer();
       });
@@ -39,7 +44,7 @@ class _VoteViewState extends State<VoteView> {
     QuerySnapshot<Map<String, dynamic>> querySnapshot = await firestore
         .collection('votes')
         .where('user', isEqualTo: user.uid)
-        .where('document', isEqualTo: widget.documentId)
+        .where('document', isEqualTo: widget.objectDocId)
         .get();
 
     return querySnapshot.docs;
@@ -64,7 +69,7 @@ class _VoteViewState extends State<VoteView> {
 
     if (docs.isEmpty) {
       await firestore.collection('votes').add(
-          {'user': user.uid, 'document': widget.documentId, 'vote': userVote});
+          {'user': user.uid, 'document': widget.objectDocId, 'vote': userVote});
       return;
     }
 
@@ -78,7 +83,7 @@ class _VoteViewState extends State<VoteView> {
   Future<void> updateDocumentVoteServer() async {
     final querySnapshot = await firestore
         .collection('votes')
-        .where('document', isEqualTo: widget.documentId)
+        .where('document', isEqualTo: widget.objectDocId)
         .get();
 
     int totalVote = 0;
@@ -89,8 +94,8 @@ class _VoteViewState extends State<VoteView> {
     }
 
     await firestore
-        .collection('posts')
-        .doc(widget.documentId)
+        .collection(widget.collectionName)
+        .doc(widget.objectDocId)
         .update({'vote': totalVote});
   }
 
@@ -99,7 +104,7 @@ class _VoteViewState extends State<VoteView> {
     super.initState();
 
     checkUserVoteServer().then((_) => setState(() {
-          _otherUsersVote = widget.post.vote - userVote;
+          _otherUsersVote = widget.votable.vote - userVote;
         }));
   }
 

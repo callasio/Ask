@@ -10,6 +10,10 @@ class InfoBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return VoteView(documentId: documentId, post: post);
+    return VoteView(
+      objectDocId: documentId,
+      votable: post,
+      collectionName: 'posts',
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:ask/questions/categories.dart';
 import 'package:ask/questions/post.dart';
+import 'package:ask/utils/server_time.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -36,21 +37,6 @@ class _WritePageState extends State<WritePage> {
     }
   }
 
-  Future<DateTime> getDateTime() async {
-    DateTime dateTime;
-    final document = await _firestore
-        .collection('timestamps')
-        .add({'createdAt': FieldValue.serverTimestamp()});
-
-    final snapshot = await document.get();
-    final docId = snapshot.reference.id;
-
-    dateTime = (snapshot.data()!['createdAt'] as Timestamp).toDate().toUtc();
-    await _firestore.collection('timestamps').doc(docId).delete();
-
-    return dateTime;
-  }
-
   Future<void> postQuestion() async {
     setState(() {
       _isLoading = true;
@@ -58,10 +44,11 @@ class _WritePageState extends State<WritePage> {
 
     var username = FirebaseAuth.instance.currentUser!.email!;
 
-    DateTime dateTime = await getDateTime();
+    DateTime dateTime = await ServerTime.getDateTime();
 
     var post = Post(
         writer: username,
+        user: FirebaseAuth.instance.currentUser!.uid,
         anonymous: _anonymous,
         category: _category!,
         datetime: dateTime,

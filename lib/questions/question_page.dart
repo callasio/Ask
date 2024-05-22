@@ -133,9 +133,6 @@ class _QuestionPageState extends State<QuestionPage> {
         CommentForm(
           documentId: widget.documentId,
           post: post,
-          onSended: () {
-            onRefresh();
-          },
         ),
       ]),
     );
