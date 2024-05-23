@@ -1,6 +1,6 @@
 import 'package:ask/comments/comment_form.dart';
 import 'package:ask/comments/comment_view.dart';
-import 'package:ask/questions/info_bar.dart';
+import 'package:ask/feed/info_bar.dart';
 import 'package:ask/questions/post.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,11 @@ class QuestionPage extends StatefulWidget {
   State<QuestionPage> createState() => _QuestionPageState();
 }
 
-class _QuestionPageState extends State<QuestionPage> {
+class _QuestionPageState extends State<QuestionPage> with MixinInfoBarParent {
   Key _refreshKey = UniqueKey();
+
+  @override
+  Function() onTap = () {};
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   Post get post => widget.post;
 
@@ -120,8 +123,17 @@ class _QuestionPageState extends State<QuestionPage> {
                       const SizedBox(
                         height: 6,
                       ),
-                      InfoBar(documentId: widget.documentId, post: post),
+                      InfoBar(
+                          parent: this,
+                          documentId: widget.documentId,
+                          post: post),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       const Divider(),
+                      const SizedBox(
+                        height: 5,
+                      ),
                       CommentView(documentId: widget.documentId, post: post)
                     ],
                   ),

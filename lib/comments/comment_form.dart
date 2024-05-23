@@ -75,6 +75,21 @@ class _CommentWriterState extends State<CommentWriter> {
     }
   }
 
+  Future<void> updateCommentNumberServer() async {
+    final querySnapshot = await firestore
+        .collection('comments')
+        .where('document', isEqualTo: widget.documentId)
+        .get();
+
+    final docs = querySnapshot.docs;
+    int commentCnt = docs.length;
+    debugPrint("comments: $commentCnt");
+    await firestore
+        .collection('posts')
+        .doc(widget.documentId)
+        .update({'comment': commentCnt});
+  }
+
   Future<void> postComment() async {
     final username = FirebaseAuth.instance.currentUser!.email!;
 
@@ -94,6 +109,7 @@ class _CommentWriterState extends State<CommentWriter> {
     });
 
     await firestore.collection('comments').add(comment.toJson());
+    await updateCommentNumberServer();
 
     textEditingController.text = '';
 

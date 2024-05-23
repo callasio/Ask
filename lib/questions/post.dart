@@ -9,6 +9,7 @@ class Post with MixinVotable, MixinTimeStamp {
   final Category category;
   final String title;
   final String body;
+  final int comment;
   @override
   DateTime datetime;
   @override
@@ -22,7 +23,8 @@ class Post with MixinVotable, MixinTimeStamp {
       required this.datetime,
       required this.title,
       required this.body,
-      required this.vote});
+      required this.vote,
+      required this.comment});
 
   @override
   Map<String, dynamic> toJson() {
@@ -35,6 +37,7 @@ class Post with MixinVotable, MixinTimeStamp {
       "title": title,
       "body": body,
       "vote": vote,
+      "comment": comment,
     };
   }
 
@@ -47,6 +50,7 @@ class Post with MixinVotable, MixinTimeStamp {
         datetime: DateTime.parse(json['timestamp'] as String),
         title: json['title'] as String,
         body: json['body'] as String,
-        vote: json['vote'] as int);
+        vote: json['vote'] as int,
+        comment: json['comment'] as int);
   }
 }

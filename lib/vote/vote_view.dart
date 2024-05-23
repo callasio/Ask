@@ -86,17 +86,17 @@ class _VoteViewState extends State<VoteView> {
         .where('document', isEqualTo: widget.objectDocId)
         .get();
 
-    int totalVote = 0;
+    int voteCnt = 0;
     final docs = querySnapshot.docs;
 
     for (final doc in docs) {
-      totalVote += doc.data()['vote'] as int;
+      voteCnt += doc.data()['vote'] as int;
     }
 
     await firestore
         .collection(widget.collectionName)
         .doc(widget.objectDocId)
-        .update({'vote': totalVote});
+        .update({'vote': voteCnt});
   }
 
   @override

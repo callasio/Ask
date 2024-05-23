@@ -1,11 +1,11 @@
-import 'package:ask/questions/info_bar.dart';
+import 'package:ask/feed/info_bar.dart';
 import 'package:ask/questions/post.dart';
 import 'package:ask/questions/question_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FeedCard extends StatefulWidget {
-  const FeedCard({super.key, required this.post, required this.documentId});
+  FeedCard({super.key, required this.post, required this.documentId});
 
   final String documentId;
   final Post post;
@@ -14,8 +14,17 @@ class FeedCard extends StatefulWidget {
   State<FeedCard> createState() => _FeedCardState();
 }
 
-class _FeedCardState extends State<FeedCard> {
+class _FeedCardState extends State<FeedCard> with MixinInfoBarParent {
   late Post post;
+
+  @override
+  Function() get onTap => () {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) =>
+                    QuestionPage(documentId: widget.documentId, post: post)));
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +33,7 @@ class _FeedCardState extends State<FeedCard> {
     return Column(
       children: [
         InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => QuestionPage(
-                        documentId: widget.documentId, post: post)));
-          },
+          onTap: () => onTap(),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -80,7 +83,11 @@ class _FeedCardState extends State<FeedCard> {
                 const SizedBox(
                   height: 8,
                 ),
-                InfoBar(documentId: widget.documentId, post: post)
+                InfoBar(
+                  documentId: widget.documentId,
+                  post: post,
+                  parent: this,
+                )
               ],
             ),
           ),
