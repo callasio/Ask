@@ -1,4 +1,5 @@
 import 'package:ask/feed/feed_card.dart';
+import 'package:ask/profile/in_drawer.dart';
 import 'package:ask/questions/categories.dart';
 import 'package:ask/questions/post.dart';
 import 'package:ask/questions/write.dart';
@@ -28,8 +29,10 @@ class _FeedPageState extends State<FeedPage> {
   List<QueryDocumentSnapshot<Map<String, dynamic>>> get _posts =>
       _snapshot.docs;
 
+  bool get isRoot => widget.categoryFilter == null;
+
   Future<void> loadPosts() async {
-    if (widget.categoryFilter == null) {
+    if (isRoot) {
       _snapshot = await _firestore
           .collection('posts')
           .orderBy('timestamp', descending: true)
@@ -57,18 +60,17 @@ class _FeedPageState extends State<FeedPage> {
     return Scaffold(
       key: _refreshKey,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (widget.categoryFilter != null) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
+        leading: isRoot
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: Navigator.of(context).pop,
+              ),
         scrolledUnderElevation: 0,
         title: widget.categoryFilter != null
             ? Text('"${widget.categoryFilter.toString()}"의 질문')
             : const Text('Ask'),
+        backgroundColor: widget.categoryFilter?.getColor(context).withAlpha(50),
         actions: [
           IconButton(
               onPressed: () {
@@ -89,34 +91,22 @@ class _FeedPageState extends State<FeedPage> {
           )
         ],
       ),
-      drawer: const Drawer(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
+      drawer: isRoot ? const ProfileDrawer() : null,
       body: RefreshIndicator(onRefresh: loadPosts, child: mainView()),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton(
-            heroTag: 'write-page',
-            onPressed: () {
-              Navigator.of(context).push(
-                  CupertinoPageRoute(builder: (context) => const WritePage()));
-            },
-            tooltip: '질문 작성하기',
-            child: const Icon(Icons.post_add),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          FloatingActionButton(
-            heroTag: "logout",
-            onPressed: FirebaseAuth.instance.signOut,
-            tooltip: '로그아웃',
-            child: const Icon(Icons.logout),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+        heroTag: 'write-page',
+        onPressed: () {
+          Navigator.of(context).push(
+              CupertinoPageRoute(builder: (context) => const WritePage()));
+        },
+        label: const Text(
+          '질문하기',
+        ),
+        icon: const Icon(
+          Icons.edit_outlined,
+        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
       ),
     );
   }

@@ -64,64 +64,65 @@ class _CommentWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+        margin: const EdgeInsets.symmetric(vertical: 4.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const SizedBox(
-        height: 4,
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
-        child: Row(
-          children: [
-            Transform.scale(
-                scale: 0.6,
-                child: Icon(Icons.person,
-                    color: Theme.of(context).colorScheme.secondary)),
-            Text(
-              comment.anonymous ? "익명" : comment.writer,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.w400),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Transform.scale(
-                scale: 0.6,
-                child: Icon(Icons.access_time,
-                    color: Theme.of(context).colorScheme.secondary)),
-            Text(
-              comment.displayTime(),
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.w400),
-            ),
-          ],
-        ),
-      ),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(comment.text),
-      ),
-      const SizedBox(
-        height: 4,
-      ),
-      Row(
-        children: [
-          const Spacer(),
-          VoteView(
-              objectDocId: commentId,
-              votable: comment,
-              collectionName: 'comments'),
           const SizedBox(
-            width: 10,
+            height: 4,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Row(
+              children: [
+                Transform.scale(
+                    scale: 0.6,
+                    child: Icon(Icons.person,
+                        color: Theme.of(context).colorScheme.secondary)),
+                Text(
+                  comment.anonymous ? "익명" : comment.writer,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 10.0,
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Transform.scale(
+                    scale: 0.6,
+                    child: Icon(Icons.access_time,
+                        color: Theme.of(context).colorScheme.secondary)),
+                Text(
+                  comment.displayTime(),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 10.0,
+                      fontWeight: FontWeight.w400),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(comment.text),
+          ),
+          const SizedBox(
+            height: 4,
+          ),
+          Row(
+            children: [
+              const Spacer(),
+              VoteView(
+                  objectDocId: commentId,
+                  votable: comment,
+                  collectionName: 'comments'),
+              const SizedBox(
+                width: 10,
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 10,
           )
-        ],
-      ),
-      const SizedBox(
-        height: 10,
-      )
-    ]));
+        ]));
   }
 }
