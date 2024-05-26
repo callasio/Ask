@@ -180,45 +180,52 @@ class _WritePageState extends State<WritePage> {
               ),
               SizedBox(
                 height: 36,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SizedBox(
-                      width: 24.0,
-                      child: Transform.scale(
-                        scale: 0.75,
-                        child: Checkbox(
-                          splashRadius: 0.0,
-                          side: BorderSide(
-                              color: Theme.of(context).disabledColor,
-                              width: 1.5),
-                          value: _anonymous,
-                          onChanged: (value) => {
-                            setState(() {
-                              _anonymous = value!;
-                            })
-                          },
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _anonymous = !_anonymous;
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SizedBox(
+                        width: 24.0,
+                        child: Transform.scale(
+                          scale: 0.75,
+                          child: Checkbox(
+                            splashRadius: 0.0,
+                            side: BorderSide(
+                                color: Theme.of(context).disabledColor,
+                                width: 1.5),
+                            value: _anonymous,
+                            onChanged: (value) => {
+                              setState(() {
+                                _anonymous = value!;
+                              })
+                            },
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '익명',
-                      style: TextStyle(
-                        color: _anonymous
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).disabledColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
+                      const SizedBox(
+                        width: 5,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                  ],
+                      Text(
+                        '익명',
+                        style: TextStyle(
+                          color: _anonymous
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).disabledColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                    ],
+                  ),
                 ),
               )
             ],
