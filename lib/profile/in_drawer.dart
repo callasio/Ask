@@ -7,13 +7,21 @@ class ProfileDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Center(
-        child: FloatingActionButton(
-          heroTag: "logout",
-          onPressed: FirebaseAuth.instance.signOut,
-          tooltip: '로그아웃',
-          child: const Icon(Icons.logout),
-        ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("환영합니다, ${FirebaseAuth.instance.currentUser!.email}"),
+          const SizedBox(
+            height: 10,
+          ),
+          FloatingActionButton.extended(
+            heroTag: "logout",
+            onPressed: FirebaseAuth.instance.signOut,
+            tooltip: '로그아웃',
+            icon: const Icon(Icons.logout),
+            label: const Text("로그아웃"),
+          ),
+        ],
       ),
     );
   }
